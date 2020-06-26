@@ -25,9 +25,9 @@ authenticate serviceName userName password = do
     
     (pamH, r1) <- liftIO $ pamStart serviceName userName (custConv password, nullPtr)
 
-    liftIO $ whenSuccess r1 $ do
-        status <- pamAuthenticate pamH (PamFlag 0)
-        whenSuccess status $ pamEnd pamH PamSuccess
+    whenSuccess r1 $ do
+        status <- liftIO $ pamAuthenticate pamH (PamFlag 0)
+        whenSuccess status $ liftIO $ pamEnd pamH PamSuccess
 
 checkAccount :: MonadIO m => String -> String -> m (Either Int ())
 checkAccount = undefined
