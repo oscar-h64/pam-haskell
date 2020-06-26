@@ -5,6 +5,8 @@ import Foreign.Ptr
 import System.Posix.PAM.LowLevel
 import System.Posix.PAM.Types
 
+-- | 'authenticate' @service user password@ attempts to authenticate @user@ and
+--   @password@ with PAM giving @service@ as the service name.
 authenticate :: String -> String -> String -> IO (Either Int ())
 authenticate serviceName userName password = do
     let custConv :: String -> PamConv
@@ -27,13 +29,18 @@ authenticate serviceName userName password = do
 checkAccount :: String -> String -> IO (Either Int ())
 checkAccount = undefined
 
-
+-- | 'pamCodeToMessage' @responseCode@ returns a description of @responseCode@
+--   in the context of PAM
 pamCodeToMessage :: Int -> String
 pamCodeToMessage = snd . pamCodeDetails
 
+-- | 'pamCodeToMessage' @responseCode@ returns the name of the define used in C
+--   to represent @responseCode@
 pamCodeToCDefine :: Int -> String
 pamCodeToCDefine = fst . pamCodeDetails
 
+-- | 'pamCodeDetails' @responseCode@ returns a tuple of the name of the C define 
+--   and a description of @responseCode@ 
 pamCodeDetails :: Int -> (String, String)
 pamCodeDetails code = case code of
     0 -> ("PAM_SUCCESS", "Successful function return")
