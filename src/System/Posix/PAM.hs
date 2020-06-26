@@ -1,6 +1,7 @@
 
 module System.Posix.PAM where
 
+import Control.Monad.IO.Class ( MonadIO, liftIO )
 import Foreign.Ptr
 import System.Posix.PAM.LowLevel
 import System.Posix.PAM.Types
@@ -12,23 +13,23 @@ authSuccess = (== PamSuccess)
 
 -- | `whenSuccess` @responseCode action@ returns @action@ if @responseCode@ is
 --   `PamSuccess`, otherwise returns @responseCode@
-whenSuccess :: PamRetCode -> IO PamRetCode -> IO PamRetCode
+whenSuccess :: MonadIO m => PamRetCode -> m PamRetCode -> m PamRetCode
 whenSuccess code action = if authSuccess code then action else pure code
 
 -- | `authenticate` @service user password@ attempts to authenticate @user@ and
 --   @password@ with PAM giving @service@ as the service name.
-authenticate :: String -> String -> String -> IO PamRetCode
+authenticate :: MonadIO m => String -> String -> String -> m PamRetCode
 authenticate serviceName userName password = do
     let custConv :: String -> PamConv
         custConv pass _ messages = return $ map (\ _ -> PamResponse pass) messages
     
-    (pamH, r1) <- pamStart serviceName userName (custConv password, nullPtr)
+    (pamH, r1) <- liftIO $ pamStart serviceName userName (custConv password, nullPtr)
 
-    whenSuccess r1 $ do
+    liftIO $ whenSuccess r1 $ do
         status <- pamAuthenticate pamH (PamFlag 0)
         whenSuccess status $ pamEnd pamH PamSuccess
 
-checkAccount :: String -> String -> IO (Either Int ())
+checkAccount :: MonadIO m => String -> String -> m (Either Int ())
 checkAccount = undefined
 
 -- | `pamCodeToMessage` @responseCode@ returns a description of @responseCode@
