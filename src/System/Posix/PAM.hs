@@ -5,9 +5,14 @@ import Foreign.Ptr
 import System.Posix.PAM.LowLevel
 import System.Posix.PAM.Types
 
+-- | 'authSuccess' @responseCode@ checks if @responseCode@ is equal to PamSuccess,
+--   i.e. checking if authentication succeeded
+authSuccess :: PamRetCode -> Bool
+authSuccess = (== PamSuccess)
+
 -- | 'authenticate' @service user password@ attempts to authenticate @user@ and
 --   @password@ with PAM giving @service@ as the service name.
-authenticate :: String -> String -> String -> IO (Either Int ())
+authenticate :: String -> String -> String -> IO PamRetCode
 authenticate serviceName userName password = do
     let custConv :: String -> PamConv
         custConv pass _ messages = do
@@ -15,35 +20,32 @@ authenticate serviceName userName password = do
             return rs
     (pamH, r1) <- pamStart serviceName userName (custConv password, nullPtr)
     case r1 of
-        PamRetCode code -> return $ Left code
+        PamRetCode code -> return $ PamRetCode code
         PamSuccess -> do
             r2 <- pamAuthenticate pamH (PamFlag 0)
             case r2 of
-                PamRetCode code -> return $ Left code
+                PamRetCode code -> return $ PamRetCode code
                 PamSuccess -> do
-                    r3 <- pamEnd pamH r2
-                    case r3 of
-                        PamSuccess -> return $ Right ()
-                        PamRetCode code -> return $ Left code
+                    pamEnd pamH r2
 
 checkAccount :: String -> String -> IO (Either Int ())
 checkAccount = undefined
 
 -- | 'pamCodeToMessage' @responseCode@ returns a description of @responseCode@
 --   in the context of PAM
-pamCodeToMessage :: Int -> String
+pamCodeToMessage :: PamRetCode -> String
 pamCodeToMessage = snd . pamCodeDetails
 
 -- | 'pamCodeToMessage' @responseCode@ returns the name of the define used in C
 --   to represent @responseCode@
-pamCodeToCDefine :: Int -> String
+pamCodeToCDefine :: PamRetCode -> String
 pamCodeToCDefine = fst . pamCodeDetails
 
 -- | 'pamCodeDetails' @responseCode@ returns a tuple of the name of the C define 
 --   and a description of @responseCode@ 
-pamCodeDetails :: Int -> (String, String)
-pamCodeDetails code = case code of
-    0 -> ("PAM_SUCCESS", "Successful function return")
+pamCodeDetails :: PamRetCode -> (String, String)
+pamCodeDetails PamSuccess        = ("PAM_SUCCESS", "Successful function return")
+pamCodeDetails (PamRetCode code) = case code of
     1 -> ("PAM_OPEN_ERR", "dlopen() failure when dynamically loading a service module")
     2 -> ("PAM_SYMBOL_ERR", "Symbol not found")
     3 -> ("PAM_SERVICE_ERR", "Error in service module")
