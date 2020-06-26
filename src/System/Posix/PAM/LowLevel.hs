@@ -14,13 +14,13 @@ import System.Posix.PAM.Internals hiding (resp, conv)
 retCodeFromC :: CInt -> PamRetCode
 retCodeFromC rc = case rc of
             0 -> PamSuccess
-            a -> PamRetCode $ fromInteger $ toInteger a
+            a -> PamRetCode $ fromIntegral a
 
 -- | 'retCodeToC' @retCode@ converts @retCode@ to the corresponding integer
 --   used in the PAM C library
 retCodeToC :: PamRetCode -> CInt
 retCodeToC PamSuccess = 0
-retCodeToC (PamRetCode a) = fromInteger $ toInteger a
+retCodeToC (PamRetCode a) = fromIntegral a
 
 responseToC :: PamResponse -> IO CPamResponse
 responseToC (PamResponse resp) = do
@@ -51,7 +51,7 @@ cConv customConv num mesArrPtr respArrPtr appData =
             let mesArr = castPtr voidArr :: Ptr CPamMessage
 
             -- peek message list from array
-            cMessages <- peekArray (fromInteger $ toInteger num) mesArr
+            cMessages <- peekArray (fromIntegral num) mesArr
 
             -- convert messages into high-level types
             messages <- mapM messageFromC cMessages
@@ -63,7 +63,7 @@ cConv customConv num mesArrPtr respArrPtr appData =
             cResponses <- mapM responseToC responses
 
             -- alloc memory for response array
-            respArr <- mallocArray (fromInteger $ toInteger num)
+            respArr <- mallocArray (fromIntegral num)
 
             -- poke resonse list into array
             pokeArray respArr cResponses
@@ -113,12 +113,12 @@ pamEnd pamHandle inRetCode = do
 
 pamAuthenticate :: PamHandle -> PamFlag -> IO PamRetCode
 pamAuthenticate pamHandle (PamFlag flag) = do
-    let cFlag = fromInteger $ toInteger flag
+    let cFlag = fromIntegral flag
     r <- c_pam_authenticate (cPamHandle pamHandle) cFlag
     return $ retCodeFromC r
 
 pamAcctMgmt :: PamHandle -> PamFlag -> IO PamRetCode
 pamAcctMgmt pamHandle (PamFlag flag) = do
-    let cFlag = fromInteger $ toInteger flag
+    let cFlag = fromIntegral flag
     r <- c_pam_acct_mgmt (cPamHandle pamHandle) cFlag
     return $ retCodeFromC r
