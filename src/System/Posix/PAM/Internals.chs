@@ -1,7 +1,6 @@
 {-# LANGUAGE CPP, ForeignFunctionInterface #-}
 module System.Posix.PAM.Internals where
 
-import Control.Applicative
 import Foreign.C
 import Foreign.Ptr
 import Foreign.Storable

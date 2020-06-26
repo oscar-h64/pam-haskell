@@ -94,9 +94,7 @@ pamStart serviceName userName (pamConv, appData) = do
 
     cPamHandle_ <- peek pamhPtr
 
-    let retCode = case r1 of
-            0 -> PamSuccess
-            a -> PamRetCode $ fromInteger $ toInteger a
+    let retCode = retCodeFromC r1
 
     free cServiceName
     free cUserName
@@ -108,10 +106,7 @@ pamStart serviceName userName (pamConv, appData) = do
 
 pamEnd :: PamHandle -> PamRetCode -> IO PamRetCode
 pamEnd pamHandle inRetCode = do
-    let cRetCode = case inRetCode of
-            PamSuccess -> 0
-            PamRetCode a -> fromInteger $ toInteger a
-    r <- c_pam_end (cPamHandle pamHandle) cRetCode
+    r <- c_pam_end (cPamHandle pamHandle) $ retCodeToC inRetCode
     freeHaskellFunPtr $ cPamCallback pamHandle
 
     return $ retCodeFromC r
