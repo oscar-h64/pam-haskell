@@ -5,43 +5,43 @@ import Foreign.Ptr
 import System.Posix.PAM.LowLevel
 import System.Posix.PAM.Types
 
--- | 'authSuccess' @responseCode@ checks if @responseCode@ is equal to PamSuccess,
+-- | `authSuccess` @responseCode@ checks if @responseCode@ is equal to `PamSuccess`,
 --   i.e. checking if authentication succeeded
 authSuccess :: PamRetCode -> Bool
 authSuccess = (== PamSuccess)
 
--- | 'authenticate' @service user password@ attempts to authenticate @user@ and
+-- | `whenSuccess` @responseCode action@ returns @action@ if @responseCode@ is
+--   `PamSuccess`, otherwise returns @responseCode@
+whenSuccess :: PamRetCode -> IO PamRetCode -> IO PamRetCode
+whenSuccess code action = if authSuccess code then action else pure code
+
+-- | `authenticate` @service user password@ attempts to authenticate @user@ and
 --   @password@ with PAM giving @service@ as the service name.
 authenticate :: String -> String -> String -> IO PamRetCode
 authenticate serviceName userName password = do
     let custConv :: String -> PamConv
-        custConv pass _ messages = do
-            let rs = map (\ _ -> PamResponse pass) messages
-            return rs
+        custConv pass _ messages = return $ map (\ _ -> PamResponse pass) messages
+    
     (pamH, r1) <- pamStart serviceName userName (custConv password, nullPtr)
-    case r1 of
-        PamRetCode code -> return $ PamRetCode code
-        PamSuccess -> do
-            r2 <- pamAuthenticate pamH (PamFlag 0)
-            case r2 of
-                PamRetCode code -> return $ PamRetCode code
-                PamSuccess -> do
-                    pamEnd pamH r2
+
+    whenSuccess r1 $ do
+        status <- pamAuthenticate pamH (PamFlag 0)
+        whenSuccess status $ pamEnd pamH PamSuccess
 
 checkAccount :: String -> String -> IO (Either Int ())
 checkAccount = undefined
 
--- | 'pamCodeToMessage' @responseCode@ returns a description of @responseCode@
+-- | `pamCodeToMessage` @responseCode@ returns a description of @responseCode@
 --   in the context of PAM
 pamCodeToMessage :: PamRetCode -> String
 pamCodeToMessage = snd . pamCodeDetails
 
--- | 'pamCodeToMessage' @responseCode@ returns the name of the define used in C
+-- | `pamCodeToMessage` @responseCode@ returns the name of the define used in C
 --   to represent @responseCode@
 pamCodeToCDefine :: PamRetCode -> String
 pamCodeToCDefine = fst . pamCodeDetails
 
--- | 'pamCodeDetails' @responseCode@ returns a tuple of the name of the C define 
+-- | `pamCodeDetails` @responseCode@ returns a tuple of the name of the C define 
 --   and a description of @responseCode@ 
 pamCodeDetails :: PamRetCode -> (String, String)
 pamCodeDetails PamSuccess        = ("PAM_SUCCESS", "Successful function return")

@@ -9,14 +9,14 @@ import Foreign.Storable
 import System.Posix.PAM.Types
 import System.Posix.PAM.Internals hiding (resp, conv)
 
--- | 'retCodeFromC' @responseCode@ converts @responseCode@ from PAM to 
+-- | `retCodeFromC` @responseCode@ converts @responseCode@ from PAM to 
 --   a PamRetCode
 retCodeFromC :: CInt -> PamRetCode
 retCodeFromC rc = case rc of
             0 -> PamSuccess
             a -> PamRetCode $ fromIntegral a
 
--- | 'retCodeToC' @retCode@ converts @retCode@ to the corresponding integer
+-- | `retCodeToC` @retCode@ converts @retCode@ to the corresponding integer
 --   used in the PAM C library
 retCodeToC :: PamRetCode -> CInt
 retCodeToC PamSuccess = 0
