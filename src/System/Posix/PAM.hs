@@ -8,15 +8,15 @@ import Foreign.Ptr
 import System.Posix.PAM.LowLevel
 import System.Posix.PAM.Types
 
--- | `authSuccess` @responseCode@ checks if @responseCode@ is equal to `PamSuccess`,
---   i.e. checking if authentication succeeded
-authSuccess :: PamRetCode -> Bool
-authSuccess = (== PamSuccess)
+-- | `isSuccess` @responseCode@ checks if @responseCode@ is equal to `PamSuccess`,
+--   i.e. checking if the account check/authentication succeeded
+isSuccess :: PamRetCode -> Bool
+isSuccess = (== PamSuccess)
 
 -- | `whenSuccess` @responseCode action@ returns @action@ if @responseCode@ is
 --   `PamSuccess`, otherwise returns @responseCode@
 whenSuccess :: MonadIO m => PamRetCode -> m PamRetCode -> m PamRetCode
-whenSuccess code action = if authSuccess code then action else pure code
+whenSuccess code action = if isSuccess code then action else pure code
 
 -- | `authenticate` @service user password@ attempts to authenticate @user@ and
 --   @password@ with PAM using @service@ to determine which file in /etc/pam.d to
@@ -32,8 +32,15 @@ authenticate serviceName userName password = do
         status <- liftIO $ pamAuthenticate pamH PamSilent
         whenSuccess status $ liftIO $ pamEnd pamH PamSuccess
 
-checkAccount :: MonadIO m => String -> String -> m (Either Int ())
-checkAccount = undefined
+-- | `checkAccount` @service user@ checks if @user@ is a valid user. @service@ is
+--   is the service name given to PAM (see `authenticate`)
+checkAccount :: MonadIO m => String -> String -> m PamRetCode
+checkAccount serviceName userName = do
+    (pamH, r1) <- liftIO $ pamStart serviceName userName (\_ _ -> pure [], nullPtr)
+
+    whenSuccess r1 $ do
+        status <- liftIO $ pamAcctMgmt pamH PamSilent
+        whenSuccess status $ liftIO $ pamEnd pamH PamSuccess
 
 -- | `pamCodeToMessage` @responseCode@ returns a description of @responseCode@
 --   in the context of PAM
