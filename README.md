@@ -13,6 +13,7 @@ Haskell bindings for PAM. This is a fork of [Evgeny Tarasov's package on Hackage
 - Work out what `checkAccount` does and implement it
 - Add ability to give multiple passwords (for 2FA systems) (see [#2](https://github.com/oscar-h64/pam-haskell/issues/2))
 - Add functions that do the prompting rather than being given details - useful as if a program using the library is intended to be distributed the number of prompts will not be known (see [#3](https://github.com/oscar-h64/pam-haskell/issues/3))
+- Add functions to allow writing PAM modules in Haskell
 
 ## Contributing:
 
