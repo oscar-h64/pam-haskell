@@ -2,14 +2,15 @@
 module System.Posix.PAM.LowLevel where
 
 import Foreign.C
-import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
+import Foreign.Marshal.Array
 import Foreign.Ptr
 import Foreign.Storable
-import System.Posix.PAM.Types
-import System.Posix.PAM.Internals hiding (resp, conv)
 
--- | `retCodeFromC` @responseCode@ converts @responseCode@ from PAM to 
+import System.Posix.PAM.Internals hiding ( conv, resp )
+import System.Posix.PAM.Types
+
+-- | `retCodeFromC` @responseCode@ converts @responseCode@ from PAM to
 --   a PamRetCode
 retCodeFromC :: CInt -> PamRetCode
 retCodeFromC rc = case rc of
@@ -19,7 +20,7 @@ retCodeFromC rc = case rc of
 -- | `retCodeToC` @retCode@ converts @retCode@ to the corresponding integer
 --   used in the PAM C library
 retCodeToC :: PamRetCode -> CInt
-retCodeToC PamSuccess = 0
+retCodeToC PamSuccess     = 0
 retCodeToC (PamRetCode a) = fromIntegral a
 
 responseToC :: PamResponse -> IO CPamResponse
@@ -112,13 +113,13 @@ pamEnd pamHandle inRetCode = do
     return $ retCodeFromC r
 
 pamAuthenticate :: PamHandle -> PamFlag -> IO PamRetCode
-pamAuthenticate pamHandle (PamFlag flag) = do
-    let cFlag = fromIntegral flag
+pamAuthenticate pamHandle flag = do
+    let cFlag = fromIntegral $ fromEnum flag
     r <- c_pam_authenticate (cPamHandle pamHandle) cFlag
     return $ retCodeFromC r
 
 pamAcctMgmt :: PamHandle -> PamFlag -> IO PamRetCode
-pamAcctMgmt pamHandle (PamFlag flag) = do
-    let cFlag = fromIntegral flag
+pamAcctMgmt pamHandle flag = do
+    let cFlag = fromIntegral $ fromEnum flag
     r <- c_pam_acct_mgmt (cPamHandle pamHandle) cFlag
     return $ retCodeFromC r

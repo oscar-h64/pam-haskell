@@ -1,8 +1,10 @@
 
 module System.Posix.PAM where
 
-import Control.Monad.IO.Class ( MonadIO, liftIO )
+import Control.Monad.IO.Class    ( MonadIO, liftIO )
+
 import Foreign.Ptr
+
 import System.Posix.PAM.LowLevel
 import System.Posix.PAM.Types
 
@@ -17,16 +19,17 @@ whenSuccess :: MonadIO m => PamRetCode -> m PamRetCode -> m PamRetCode
 whenSuccess code action = if authSuccess code then action else pure code
 
 -- | `authenticate` @service user password@ attempts to authenticate @user@ and
---   @password@ with PAM giving @service@ as the service name.
+--   @password@ with PAM using @service@ to determine which file in /etc/pam.d to
+--   use
 authenticate :: MonadIO m => String -> String -> String -> m PamRetCode
 authenticate serviceName userName password = do
-    let custConv :: String -> PamConv
-        custConv pass _ messages = return $ map (\ _ -> PamResponse pass) messages
-    
-    (pamH, r1) <- liftIO $ pamStart serviceName userName (custConv password, nullPtr)
+    let custConv :: PamConv
+        custConv _ messages = return $ map (\ _ -> PamResponse password) messages
+
+    (pamH, r1) <- liftIO $ pamStart serviceName userName (custConv, nullPtr)
 
     whenSuccess r1 $ do
-        status <- liftIO $ pamAuthenticate pamH (PamFlag 0)
+        status <- liftIO $ pamAuthenticate pamH PamSilent
         whenSuccess status $ liftIO $ pamEnd pamH PamSuccess
 
 checkAccount :: MonadIO m => String -> String -> m (Either Int ())
@@ -42,8 +45,8 @@ pamCodeToMessage = snd . pamCodeDetails
 pamCodeToCDefine :: PamRetCode -> String
 pamCodeToCDefine = fst . pamCodeDetails
 
--- | `pamCodeDetails` @responseCode@ returns a tuple of the name of the C define 
---   and a description of @responseCode@ 
+-- | `pamCodeDetails` @responseCode@ returns a tuple of the name of the C define
+--   and a description of @responseCode@
 pamCodeDetails :: PamRetCode -> (String, String)
 pamCodeDetails PamSuccess        = ("PAM_SUCCESS", "Successful function return")
 pamCodeDetails (PamRetCode code) = case code of

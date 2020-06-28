@@ -5,7 +5,7 @@ import Foreign.C
 import Foreign.Ptr
 
 data PamMessage = PamMessage { pmString :: String
-                             , pmStyle :: PamStyle
+                             , pmStyle  :: PamStyle
                              }
                              deriving (Show, Eq)
 
@@ -25,7 +25,15 @@ data PamRetCode = PamSuccess
                 | PamRetCode Int
                 deriving (Show, Eq)
 
-data PamFlag = PamFlag Int
+data PamFlag = PamSilent
+             | PamDisallowNullAuthTok
+             | PamEstablishCred
+             | PamDeleteCred
+             | PamReinitializeCred
+             | PamRefreshCred
+             | PamChangeExpiredAuthTok
+             | PamNone
+             deriving (Show, Eq, Enum)
 
 type PamConv = Ptr () -> [PamMessage] -> IO [PamResponse]
 

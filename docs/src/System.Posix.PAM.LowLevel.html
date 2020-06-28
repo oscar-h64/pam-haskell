@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">System.Posix.PAM.LowLevel</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Foreign.C</span></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Foreign.Marshal.Alloc</span></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Foreign.Marshal.Array</span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Foreign.Ptr</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Foreign.Storable</span></span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">System.Posix.PAM.Internals</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">conv</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">resp</span></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html"><span class="hs-identifier">System.Posix.PAM.Types</span></a></span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-comment">-- | `retCodeFromC` @responseCode@ converts @responseCode@ from PAM to</span><span>
+</span><span id="line-14"></span><span class="hs-comment">--   a PamRetCode</span><span>
+</span><span id="line-15"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#retCodeFromC"><span class="hs-identifier hs-type">retCodeFromC</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CInt</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-type">PamRetCode</span></a></span><span>
+</span><span id="line-16"></span><span id="retCodeFromC"><span class="annot"><span class="annottext">retCodeFromC :: CInt -&gt; PamRetCode
+</span><a href="System.Posix.PAM.LowLevel.html#retCodeFromC"><span class="hs-identifier hs-var hs-var">retCodeFromC</span></a></span></span><span> </span><span id="local-6989586621679041986"><span class="annot"><span class="annottext">rc :: CInt
+</span><a href="#local-6989586621679041986"><span class="hs-identifier hs-var">rc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041986"><span class="hs-identifier hs-var">rc</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-17"></span><span>            </span><span class="hs-number">0</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PamRetCode
+</span><a href="System.Posix.PAM.Types.html#PamSuccess"><span class="hs-identifier hs-var">PamSuccess</span></a></span><span>
+</span><span id="line-18"></span><span>            </span><span id="local-6989586621679041984"><span class="annot"><span class="annottext">a :: CInt
+</span><a href="#local-6989586621679041984"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int -&gt; PamRetCode
+</span><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-var">PamRetCode</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; PamRetCode) -&gt; Int -&gt; PamRetCode
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CInt -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041984"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="hs-comment">-- | `retCodeToC` @retCode@ converts @retCode@ to the corresponding integer</span><span>
+</span><span id="line-21"></span><span class="hs-comment">--   used in the PAM C library</span><span>
+</span><span id="line-22"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#retCodeToC"><span class="hs-identifier hs-type">retCodeToC</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-type">PamRetCode</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CInt</span></span><span>
+</span><span id="line-23"></span><span id="retCodeToC"><span class="annot"><span class="annottext">retCodeToC :: PamRetCode -&gt; CInt
+</span><a href="System.Posix.PAM.LowLevel.html#retCodeToC"><span class="hs-identifier hs-var hs-var">retCodeToC</span></a></span></span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamSuccess"><span class="hs-identifier hs-type">PamSuccess</span></a></span><span>     </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-24"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#retCodeToC"><span class="hs-identifier hs-var">retCodeToC</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-type">PamRetCode</span></a></span><span> </span><span id="local-6989586621679041981"><span class="annot"><span class="annottext">a :: Int
+</span><a href="#local-6989586621679041981"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; CInt
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679041981"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-25"></span><span>
+</span><span id="line-26"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#responseToC"><span class="hs-identifier hs-type">responseToC</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamResponse"><span class="hs-identifier hs-type">PamResponse</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">CPamResponse</span></span><span>
+</span><span id="line-27"></span><span id="responseToC"><span class="annot"><span class="annottext">responseToC :: PamResponse -&gt; IO CPamResponse
+</span><a href="System.Posix.PAM.LowLevel.html#responseToC"><span class="hs-identifier hs-var hs-var">responseToC</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Posix.PAM.Types.html#PamResponse"><span class="hs-identifier hs-type">PamResponse</span></a></span><span> </span><span id="local-6989586621679041978"><span class="annot"><span class="annottext">resp :: String
+</span><a href="#local-6989586621679041978"><span class="hs-identifier hs-var">resp</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-28"></span><span>    </span><span id="local-6989586621679041977"><span class="annot"><span class="annottext">CString
+</span><a href="#local-6989586621679041977"><span class="hs-identifier hs-var">resp'</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO CString
+</span><span class="hs-identifier hs-var">newCString</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679041978"><span class="hs-identifier hs-var">resp</span></a></span><span>
+</span><span id="line-29"></span><span>    </span><span class="annot"><span class="annottext">CPamResponse -&gt; IO CPamResponse
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(CPamResponse -&gt; IO CPamResponse)
+-&gt; CPamResponse -&gt; IO CPamResponse
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CString -&gt; CInt -&gt; CPamResponse
+</span><span class="hs-identifier hs-var">CPamResponse</span></span><span> </span><span class="annot"><span class="annottext">CString
+</span><a href="#local-6989586621679041977"><span class="hs-identifier hs-var">resp'</span></a></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#messageFromC"><span class="hs-identifier hs-type">messageFromC</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CPamMessage</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamMessage"><span class="hs-identifier hs-type">PamMessage</span></a></span><span>
+</span><span id="line-32"></span><span id="messageFromC"><span class="annot"><span class="annottext">messageFromC :: CPamMessage -&gt; IO PamMessage
+</span><a href="System.Posix.PAM.LowLevel.html#messageFromC"><span class="hs-identifier hs-var hs-var">messageFromC</span></a></span></span><span> </span><span id="local-6989586621679041973"><span class="annot"><span class="annottext">cmes :: CPamMessage
+</span><a href="#local-6989586621679041973"><span class="hs-identifier hs-var">cmes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679041972"><span class="annot"><span class="annottext">style :: PamStyle
+</span><a href="#local-6989586621679041972"><span class="hs-identifier hs-var hs-var">style</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">CPamMessage -&gt; CInt
+</span><span class="hs-identifier hs-var hs-var">msg_style</span></span><span> </span><span class="annot"><span class="annottext">CPamMessage
+</span><a href="#local-6989586621679041973"><span class="hs-identifier hs-var">cmes</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-34"></span><span>            </span><span class="hs-number">1</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PamStyle
+</span><a href="System.Posix.PAM.Types.html#PamPromptEchoOff"><span class="hs-identifier hs-var">PamPromptEchoOff</span></a></span><span>
+</span><span id="line-35"></span><span>            </span><span class="hs-number">2</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PamStyle
+</span><a href="System.Posix.PAM.Types.html#PamPromptEchoOn"><span class="hs-identifier hs-var">PamPromptEchoOn</span></a></span><span>
+</span><span id="line-36"></span><span>            </span><span class="hs-number">3</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PamStyle
+</span><a href="System.Posix.PAM.Types.html#PamErrorMsg"><span class="hs-identifier hs-var">PamErrorMsg</span></a></span><span>
+</span><span id="line-37"></span><span>            </span><span class="hs-number">4</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PamStyle
+</span><a href="System.Posix.PAM.Types.html#PamTextInfo"><span class="hs-identifier hs-var">PamTextInfo</span></a></span><span>
+</span><span id="line-38"></span><span>            </span><span id="local-6989586621679041966"><span class="annot"><span class="annottext">a :: CInt
+</span><a href="#local-6989586621679041966"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">String -&gt; PamStyle
+forall a. HasCallStack =&gt; String -&gt; a
+</span><span class="hs-identifier hs-var">error</span></span><span> </span><span class="annot"><span class="annottext">(String -&gt; PamStyle) -&gt; String -&gt; PamStyle
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="hs-string">&quot;unknown style value: &quot;</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; String -&gt; String
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">CInt -&gt; String
+forall a. Show a =&gt; a -&gt; String
+</span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041966"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-39"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-40"></span><span>        </span><span id="local-6989586621679041963"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679041963"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">CString -&gt; IO String
+</span><span class="hs-identifier hs-var">peekCString</span></span><span> </span><span class="annot"><span class="annottext">(CString -&gt; IO String) -&gt; CString -&gt; IO String
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CPamMessage -&gt; CString
+</span><span class="hs-identifier hs-var hs-var">msg</span></span><span> </span><span class="annot"><span class="annottext">CPamMessage
+</span><a href="#local-6989586621679041973"><span class="hs-identifier hs-var">cmes</span></a></span><span>
+</span><span id="line-41"></span><span>        </span><span class="annot"><span class="annottext">PamMessage -&gt; IO PamMessage
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(PamMessage -&gt; IO PamMessage) -&gt; PamMessage -&gt; IO PamMessage
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; PamStyle -&gt; PamMessage
+</span><a href="System.Posix.PAM.Types.html#PamMessage"><span class="hs-identifier hs-var">PamMessage</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679041963"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="annot"><span class="annottext">PamStyle
+</span><a href="#local-6989586621679041972"><span class="hs-identifier hs-var">style</span></a></span><span>
+</span><span id="line-42"></span><span>
+</span><span id="line-43"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#cConv"><span class="hs-identifier hs-type">cConv</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="System.Posix.PAM.Types.html#PamMessage"><span class="hs-identifier hs-type">PamMessage</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="System.Posix.PAM.Types.html#PamResponse"><span class="hs-identifier hs-type">PamResponse</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CInt</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">CInt</span></span><span>
+</span><span id="line-44"></span><span id="cConv"><span class="annot"><span class="annottext">cConv :: (Ptr () -&gt; [PamMessage] -&gt; IO [PamResponse])
+-&gt; CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt
+</span><a href="System.Posix.PAM.LowLevel.html#cConv"><span class="hs-identifier hs-var hs-var">cConv</span></a></span></span><span> </span><span id="local-6989586621679041958"><span class="annot"><span class="annottext">customConv :: Ptr () -&gt; [PamMessage] -&gt; IO [PamResponse]
+</span><a href="#local-6989586621679041958"><span class="hs-identifier hs-var">customConv</span></a></span></span><span> </span><span id="local-6989586621679041957"><span class="annot"><span class="annottext">num :: CInt
+</span><a href="#local-6989586621679041957"><span class="hs-identifier hs-var">num</span></a></span></span><span> </span><span id="local-6989586621679041956"><span class="annot"><span class="annottext">mesArrPtr :: Ptr (Ptr ())
+</span><a href="#local-6989586621679041956"><span class="hs-identifier hs-var">mesArrPtr</span></a></span></span><span> </span><span id="local-6989586621679041955"><span class="annot"><span class="annottext">respArrPtr :: Ptr (Ptr ())
+</span><a href="#local-6989586621679041955"><span class="hs-identifier hs-var">respArrPtr</span></a></span></span><span> </span><span id="local-6989586621679041954"><span class="annot"><span class="annottext">appData :: Ptr ()
+</span><a href="#local-6989586621679041954"><span class="hs-identifier hs-var">appData</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041957"><span class="hs-identifier hs-var">num</span></a></span><span> </span><span class="annot"><span class="annottext">CInt -&gt; CInt -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">&lt;=</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-46"></span><span>        </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">CInt -&gt; IO CInt
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="hs-number">19</span></span><span>
+</span><span id="line-47"></span><span>        </span><span class="hs-keyword">else</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-48"></span><span>            </span><span class="hs-comment">-- get array pointer (pointer to first element)</span><span>
+</span><span id="line-49"></span><span>            </span><span id="local-6989586621679041952"><span class="annot"><span class="annottext">Ptr ()
+</span><a href="#local-6989586621679041952"><span class="hs-identifier hs-var">voidArr</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ptr (Ptr ()) -&gt; IO (Ptr ())
+forall a. Storable a =&gt; Ptr a -&gt; IO a
+</span><span class="hs-identifier hs-var">peek</span></span><span> </span><span class="annot"><span class="annottext">Ptr (Ptr ())
+</span><a href="#local-6989586621679041956"><span class="hs-identifier hs-var">mesArrPtr</span></a></span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span>            </span><span class="hs-comment">-- cast pointer type from ()</span><span>
+</span><span id="line-52"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679041950"><span class="annot"><span class="annottext">mesArr :: Ptr CPamMessage
+</span><a href="#local-6989586621679041950"><span class="hs-identifier hs-var hs-var">mesArr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ptr () -&gt; Ptr CPamMessage
+forall a b. Ptr a -&gt; Ptr b
+</span><span class="hs-identifier hs-var">castPtr</span></span><span> </span><span class="annot"><span class="annottext">Ptr ()
+</span><a href="#local-6989586621679041952"><span class="hs-identifier hs-var">voidArr</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">CPamMessage</span></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span>            </span><span class="hs-comment">-- peek message list from array</span><span>
+</span><span id="line-55"></span><span>            </span><span id="local-6989586621679041948"><span class="annot"><span class="annottext">[CPamMessage]
+</span><a href="#local-6989586621679041948"><span class="hs-identifier hs-var">cMessages</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Ptr CPamMessage -&gt; IO [CPamMessage]
+forall a. Storable a =&gt; Int -&gt; Ptr a -&gt; IO [a]
+</span><span class="hs-identifier hs-var">peekArray</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CInt -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041957"><span class="hs-identifier hs-var">num</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Ptr CPamMessage
+</span><a href="#local-6989586621679041950"><span class="hs-identifier hs-var">mesArr</span></a></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span>            </span><span class="hs-comment">-- convert messages into high-level types</span><span>
+</span><span id="line-58"></span><span>            </span><span id="local-6989586621679041946"><span class="annot"><span class="annottext">[PamMessage]
+</span><a href="#local-6989586621679041946"><span class="hs-identifier hs-var">messages</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(CPamMessage -&gt; IO PamMessage) -&gt; [CPamMessage] -&gt; IO [PamMessage]
+forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+(Traversable t, Monad m) =&gt;
+(a -&gt; m b) -&gt; t a -&gt; m (t b)
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="annot"><span class="annottext">CPamMessage -&gt; IO PamMessage
+</span><a href="System.Posix.PAM.LowLevel.html#messageFromC"><span class="hs-identifier hs-var">messageFromC</span></a></span><span> </span><span class="annot"><span class="annottext">[CPamMessage]
+</span><a href="#local-6989586621679041948"><span class="hs-identifier hs-var">cMessages</span></a></span><span>
+</span><span id="line-59"></span><span>
+</span><span id="line-60"></span><span>            </span><span class="hs-comment">-- create response list</span><span>
+</span><span id="line-61"></span><span>            </span><span id="local-6989586621679041944"><span class="annot"><span class="annottext">[PamResponse]
+</span><a href="#local-6989586621679041944"><span class="hs-identifier hs-var">responses</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ptr () -&gt; [PamMessage] -&gt; IO [PamResponse]
+</span><a href="#local-6989586621679041958"><span class="hs-identifier hs-var">customConv</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr ()
+</span><a href="#local-6989586621679041954"><span class="hs-identifier hs-var">appData</span></a></span><span> </span><span class="annot"><span class="annottext">[PamMessage]
+</span><a href="#local-6989586621679041946"><span class="hs-identifier hs-var">messages</span></a></span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span>            </span><span class="hs-comment">-- convert responses into low-level types</span><span>
+</span><span id="line-64"></span><span>            </span><span id="local-6989586621679041943"><span class="annot"><span class="annottext">[CPamResponse]
+</span><a href="#local-6989586621679041943"><span class="hs-identifier hs-var">cResponses</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(PamResponse -&gt; IO CPamResponse)
+-&gt; [PamResponse] -&gt; IO [CPamResponse]
+forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+(Traversable t, Monad m) =&gt;
+(a -&gt; m b) -&gt; t a -&gt; m (t b)
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="annot"><span class="annottext">PamResponse -&gt; IO CPamResponse
+</span><a href="System.Posix.PAM.LowLevel.html#responseToC"><span class="hs-identifier hs-var">responseToC</span></a></span><span> </span><span class="annot"><span class="annottext">[PamResponse]
+</span><a href="#local-6989586621679041944"><span class="hs-identifier hs-var">responses</span></a></span><span>
+</span><span id="line-65"></span><span>
+</span><span id="line-66"></span><span>            </span><span class="hs-comment">-- alloc memory for response array</span><span>
+</span><span id="line-67"></span><span>            </span><span id="local-6989586621679041942"><span class="annot"><span class="annottext">Ptr CPamResponse
+</span><a href="#local-6989586621679041942"><span class="hs-identifier hs-var">respArr</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Int -&gt; IO (Ptr CPamResponse)
+forall a. Storable a =&gt; Int -&gt; IO (Ptr a)
+</span><span class="hs-identifier hs-var">mallocArray</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">CInt -&gt; Int
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041957"><span class="hs-identifier hs-var">num</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span>            </span><span class="hs-comment">-- poke resonse list into array</span><span>
+</span><span id="line-70"></span><span>            </span><span class="annot"><span class="annottext">Ptr CPamResponse -&gt; [CPamResponse] -&gt; IO ()
+forall a. Storable a =&gt; Ptr a -&gt; [a] -&gt; IO ()
+</span><span class="hs-identifier hs-var">pokeArray</span></span><span> </span><span class="annot"><span class="annottext">Ptr CPamResponse
+</span><a href="#local-6989586621679041942"><span class="hs-identifier hs-var">respArr</span></a></span><span> </span><span class="annot"><span class="annottext">[CPamResponse]
+</span><a href="#local-6989586621679041943"><span class="hs-identifier hs-var">cResponses</span></a></span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span>            </span><span class="hs-comment">-- poke array pointer into respArrPtr</span><span>
+</span><span id="line-73"></span><span>            </span><span class="annot"><span class="annottext">Ptr (Ptr ()) -&gt; Ptr () -&gt; IO ()
+forall a. Storable a =&gt; Ptr a -&gt; a -&gt; IO ()
+</span><span class="hs-identifier hs-var">poke</span></span><span> </span><span class="annot"><span class="annottext">Ptr (Ptr ())
+</span><a href="#local-6989586621679041955"><span class="hs-identifier hs-var">respArrPtr</span></a></span><span> </span><span class="annot"><span class="annottext">(Ptr () -&gt; IO ()) -&gt; Ptr () -&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Ptr CPamResponse -&gt; Ptr ()
+forall a b. Ptr a -&gt; Ptr b
+</span><span class="hs-identifier hs-var">castPtr</span></span><span> </span><span class="annot"><span class="annottext">Ptr CPamResponse
+</span><a href="#local-6989586621679041942"><span class="hs-identifier hs-var">respArr</span></a></span><span>
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span>            </span><span class="hs-comment">-- return PAM_SUCCESS</span><span>
+</span><span id="line-76"></span><span>            </span><span class="annot"><span class="annottext">CInt -&gt; IO CInt
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="hs-number">0</span></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span>
+</span><span id="line-79"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#pamStart"><span class="hs-identifier hs-type">pamStart</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Posix.PAM.Types.html#PamConv"><span class="hs-identifier hs-type">PamConv</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="System.Posix.PAM.Types.html#PamHandle"><span class="hs-identifier hs-type">PamHandle</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-type">PamRetCode</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span id="pamStart"><span class="annot"><span class="annottext">pamStart :: String
+-&gt; String
+-&gt; (Ptr () -&gt; [PamMessage] -&gt; IO [PamResponse], Ptr ())
+-&gt; IO (PamHandle, PamRetCode)
+</span><a href="System.Posix.PAM.LowLevel.html#pamStart"><span class="hs-identifier hs-var hs-var">pamStart</span></a></span></span><span> </span><span id="local-6989586621679041936"><span class="annot"><span class="annottext">serviceName :: String
+</span><a href="#local-6989586621679041936"><span class="hs-identifier hs-var">serviceName</span></a></span></span><span> </span><span id="local-6989586621679041935"><span class="annot"><span class="annottext">userName :: String
+</span><a href="#local-6989586621679041935"><span class="hs-identifier hs-var">userName</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041934"><span class="annot"><span class="annottext">pamConv :: Ptr () -&gt; [PamMessage] -&gt; IO [PamResponse]
+</span><a href="#local-6989586621679041934"><span class="hs-identifier hs-var">pamConv</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041933"><span class="annot"><span class="annottext">appData :: Ptr ()
+</span><a href="#local-6989586621679041933"><span class="hs-identifier hs-var">appData</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-81"></span><span>    </span><span id="local-6989586621679041932"><span class="annot"><span class="annottext">CString
+</span><a href="#local-6989586621679041932"><span class="hs-identifier hs-var">cServiceName</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO CString
+</span><span class="hs-identifier hs-var">newCString</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679041936"><span class="hs-identifier hs-var">serviceName</span></a></span><span>
+</span><span id="line-82"></span><span>    </span><span id="local-6989586621679041931"><span class="annot"><span class="annottext">CString
+</span><a href="#local-6989586621679041931"><span class="hs-identifier hs-var">cUserName</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO CString
+</span><span class="hs-identifier hs-var">newCString</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679041935"><span class="hs-identifier hs-var">userName</span></a></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span>    </span><span class="hs-comment">-- create FunPtr pointer to function and embedd PamConv function into cConv</span><span>
+</span><span id="line-85"></span><span>    </span><span id="local-6989586621679041930"><span class="annot"><span class="annottext">FunPtr (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+</span><a href="#local-6989586621679041930"><span class="hs-identifier hs-var">pamConvPtr</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+-&gt; IO
+     (FunPtr
+        (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt))
+</span><span class="hs-identifier hs-var">mkconvFunc</span></span><span> </span><span class="annot"><span class="annottext">((CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+ -&gt; IO
+      (FunPtr
+         (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)))
+-&gt; (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+-&gt; IO
+     (FunPtr
+        (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Ptr () -&gt; [PamMessage] -&gt; IO [PamResponse])
+-&gt; CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt
+</span><a href="System.Posix.PAM.LowLevel.html#cConv"><span class="hs-identifier hs-var">cConv</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr () -&gt; [PamMessage] -&gt; IO [PamResponse]
+</span><a href="#local-6989586621679041934"><span class="hs-identifier hs-var">pamConv</span></a></span><span>
+</span><span id="line-86"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679041928"><span class="annot"><span class="annottext">conv :: CPamConv
+</span><a href="#local-6989586621679041928"><span class="hs-identifier hs-var hs-var">conv</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FunPtr (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+-&gt; Ptr () -&gt; CPamConv
+</span><span class="hs-identifier hs-var">CPamConv</span></span><span> </span><span class="annot"><span class="annottext">FunPtr (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+</span><a href="#local-6989586621679041930"><span class="hs-identifier hs-var">pamConvPtr</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr ()
+</span><a href="#local-6989586621679041933"><span class="hs-identifier hs-var">appData</span></a></span><span>
+</span><span id="line-87"></span><span>
+</span><span id="line-88"></span><span>    </span><span id="local-6989586621679041926"><span class="annot"><span class="annottext">Ptr CPamConv
+</span><a href="#local-6989586621679041926"><span class="hs-identifier hs-var">convPtr</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Ptr CPamConv)
+forall a. Storable a =&gt; IO (Ptr a)
+</span><span class="hs-identifier hs-var">malloc</span></span><span>
+</span><span id="line-89"></span><span>    </span><span class="annot"><span class="annottext">Ptr CPamConv -&gt; CPamConv -&gt; IO ()
+forall a. Storable a =&gt; Ptr a -&gt; a -&gt; IO ()
+</span><span class="hs-identifier hs-var">poke</span></span><span> </span><span class="annot"><span class="annottext">Ptr CPamConv
+</span><a href="#local-6989586621679041926"><span class="hs-identifier hs-var">convPtr</span></a></span><span> </span><span class="annot"><span class="annottext">CPamConv
+</span><a href="#local-6989586621679041928"><span class="hs-identifier hs-var">conv</span></a></span><span>
+</span><span id="line-90"></span><span>
+</span><span id="line-91"></span><span>    </span><span id="local-6989586621679041924"><span class="annot"><span class="annottext">Ptr (Ptr ())
+</span><a href="#local-6989586621679041924"><span class="hs-identifier hs-var">pamhPtr</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO (Ptr (Ptr ()))
+forall a. Storable a =&gt; IO (Ptr a)
+</span><span class="hs-identifier hs-var">malloc</span></span><span>
+</span><span id="line-92"></span><span>    </span><span class="annot"><span class="annottext">Ptr (Ptr ()) -&gt; Ptr () -&gt; IO ()
+forall a. Storable a =&gt; Ptr a -&gt; a -&gt; IO ()
+</span><span class="hs-identifier hs-var">poke</span></span><span> </span><span class="annot"><span class="annottext">Ptr (Ptr ())
+</span><a href="#local-6989586621679041924"><span class="hs-identifier hs-var">pamhPtr</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr ()
+forall a. Ptr a
+</span><span class="hs-identifier hs-var">nullPtr</span></span><span>
+</span><span id="line-93"></span><span>
+</span><span id="line-94"></span><span>    </span><span id="local-6989586621679041922"><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041922"><span class="hs-identifier hs-var">r1</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">CString -&gt; CString -&gt; Ptr CPamConv -&gt; Ptr (Ptr ()) -&gt; IO CInt
+</span><span class="hs-identifier hs-var">c_pam_start</span></span><span> </span><span class="annot"><span class="annottext">CString
+</span><a href="#local-6989586621679041932"><span class="hs-identifier hs-var">cServiceName</span></a></span><span> </span><span class="annot"><span class="annottext">CString
+</span><a href="#local-6989586621679041931"><span class="hs-identifier hs-var">cUserName</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr CPamConv
+</span><a href="#local-6989586621679041926"><span class="hs-identifier hs-var">convPtr</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr (Ptr ())
+</span><a href="#local-6989586621679041924"><span class="hs-identifier hs-var">pamhPtr</span></a></span><span>
+</span><span id="line-95"></span><span>
+</span><span id="line-96"></span><span>    </span><span id="local-6989586621679041920"><span class="annot"><span class="annottext">Ptr ()
+</span><a href="#local-6989586621679041920"><span class="hs-identifier hs-var">cPamHandle_</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ptr (Ptr ()) -&gt; IO (Ptr ())
+forall a. Storable a =&gt; Ptr a -&gt; IO a
+</span><span class="hs-identifier hs-var">peek</span></span><span> </span><span class="annot"><span class="annottext">Ptr (Ptr ())
+</span><a href="#local-6989586621679041924"><span class="hs-identifier hs-var">pamhPtr</span></a></span><span>
+</span><span id="line-97"></span><span>
+</span><span id="line-98"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679041919"><span class="annot"><span class="annottext">retCode :: PamRetCode
+</span><a href="#local-6989586621679041919"><span class="hs-identifier hs-var hs-var">retCode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">CInt -&gt; PamRetCode
+</span><a href="System.Posix.PAM.LowLevel.html#retCodeFromC"><span class="hs-identifier hs-var">retCodeFromC</span></a></span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041922"><span class="hs-identifier hs-var">r1</span></a></span><span>
+</span><span id="line-99"></span><span>
+</span><span id="line-100"></span><span>    </span><span class="annot"><span class="annottext">CString -&gt; IO ()
+forall a. Ptr a -&gt; IO ()
+</span><span class="hs-identifier hs-var">free</span></span><span> </span><span class="annot"><span class="annottext">CString
+</span><a href="#local-6989586621679041932"><span class="hs-identifier hs-var">cServiceName</span></a></span><span>
+</span><span id="line-101"></span><span>    </span><span class="annot"><span class="annottext">CString -&gt; IO ()
+forall a. Ptr a -&gt; IO ()
+</span><span class="hs-identifier hs-var">free</span></span><span> </span><span class="annot"><span class="annottext">CString
+</span><a href="#local-6989586621679041931"><span class="hs-identifier hs-var">cUserName</span></a></span><span>
+</span><span id="line-102"></span><span>    </span><span class="annot"><span class="annottext">Ptr CPamConv -&gt; IO ()
+forall a. Ptr a -&gt; IO ()
+</span><span class="hs-identifier hs-var">free</span></span><span> </span><span class="annot"><span class="annottext">Ptr CPamConv
+</span><a href="#local-6989586621679041926"><span class="hs-identifier hs-var">convPtr</span></a></span><span>
+</span><span id="line-103"></span><span>
+</span><span id="line-104"></span><span>    </span><span class="annot"><span class="annottext">Ptr (Ptr ()) -&gt; IO ()
+forall a. Ptr a -&gt; IO ()
+</span><span class="hs-identifier hs-var">free</span></span><span> </span><span class="annot"><span class="annottext">Ptr (Ptr ())
+</span><a href="#local-6989586621679041924"><span class="hs-identifier hs-var">pamhPtr</span></a></span><span>
+</span><span id="line-105"></span><span>
+</span><span id="line-106"></span><span>    </span><span class="annot"><span class="annottext">(PamHandle, PamRetCode) -&gt; IO (PamHandle, PamRetCode)
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Ptr ()
+-&gt; FunPtr
+     (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+-&gt; PamHandle
+</span><a href="System.Posix.PAM.Types.html#PamHandle"><span class="hs-identifier hs-var">PamHandle</span></a></span><span> </span><span class="annot"><span class="annottext">Ptr ()
+</span><a href="#local-6989586621679041920"><span class="hs-identifier hs-var">cPamHandle_</span></a></span><span> </span><span class="annot"><span class="annottext">FunPtr (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+</span><a href="#local-6989586621679041930"><span class="hs-identifier hs-var">pamConvPtr</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">PamRetCode
+</span><a href="#local-6989586621679041919"><span class="hs-identifier hs-var">retCode</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#pamEnd"><span class="hs-identifier hs-type">pamEnd</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamHandle"><span class="hs-identifier hs-type">PamHandle</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-type">PamRetCode</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-type">PamRetCode</span></a></span><span>
+</span><span id="line-109"></span><span id="pamEnd"><span class="annot"><span class="annottext">pamEnd :: PamHandle -&gt; PamRetCode -&gt; IO PamRetCode
+</span><a href="System.Posix.PAM.LowLevel.html#pamEnd"><span class="hs-identifier hs-var hs-var">pamEnd</span></a></span></span><span> </span><span id="local-6989586621679041915"><span class="annot"><span class="annottext">pamHandle :: PamHandle
+</span><a href="#local-6989586621679041915"><span class="hs-identifier hs-var">pamHandle</span></a></span></span><span> </span><span id="local-6989586621679041914"><span class="annot"><span class="annottext">inRetCode :: PamRetCode
+</span><a href="#local-6989586621679041914"><span class="hs-identifier hs-var">inRetCode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-110"></span><span>    </span><span id="local-6989586621679041913"><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041913"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ptr () -&gt; CInt -&gt; IO CInt
+</span><span class="hs-identifier hs-var">c_pam_end</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PamHandle -&gt; Ptr ()
+</span><a href="System.Posix.PAM.Types.html#cPamHandle"><span class="hs-identifier hs-var hs-var">cPamHandle</span></a></span><span> </span><span class="annot"><span class="annottext">PamHandle
+</span><a href="#local-6989586621679041915"><span class="hs-identifier hs-var">pamHandle</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(CInt -&gt; IO CInt) -&gt; CInt -&gt; IO CInt
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PamRetCode -&gt; CInt
+</span><a href="System.Posix.PAM.LowLevel.html#retCodeToC"><span class="hs-identifier hs-var">retCodeToC</span></a></span><span> </span><span class="annot"><span class="annottext">PamRetCode
+</span><a href="#local-6989586621679041914"><span class="hs-identifier hs-var">inRetCode</span></a></span><span>
+</span><span id="line-111"></span><span>    </span><span class="annot"><span class="annottext">FunPtr (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+-&gt; IO ()
+forall a. FunPtr a -&gt; IO ()
+</span><span class="hs-identifier hs-var">freeHaskellFunPtr</span></span><span> </span><span class="annot"><span class="annottext">(FunPtr (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+ -&gt; IO ())
+-&gt; FunPtr
+     (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+-&gt; IO ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PamHandle
+-&gt; FunPtr
+     (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+</span><a href="System.Posix.PAM.Types.html#cPamCallback"><span class="hs-identifier hs-var hs-var">cPamCallback</span></a></span><span> </span><span class="annot"><span class="annottext">PamHandle
+</span><a href="#local-6989586621679041915"><span class="hs-identifier hs-var">pamHandle</span></a></span><span>
+</span><span id="line-112"></span><span>
+</span><span id="line-113"></span><span>    </span><span class="annot"><span class="annottext">PamRetCode -&gt; IO PamRetCode
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(PamRetCode -&gt; IO PamRetCode) -&gt; PamRetCode -&gt; IO PamRetCode
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CInt -&gt; PamRetCode
+</span><a href="System.Posix.PAM.LowLevel.html#retCodeFromC"><span class="hs-identifier hs-var">retCodeFromC</span></a></span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041913"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-114"></span><span>
+</span><span id="line-115"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#pamAuthenticate"><span class="hs-identifier hs-type">pamAuthenticate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamHandle"><span class="hs-identifier hs-type">PamHandle</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamFlag"><span class="hs-identifier hs-type">PamFlag</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-type">PamRetCode</span></a></span><span>
+</span><span id="line-116"></span><span id="pamAuthenticate"><span class="annot"><span class="annottext">pamAuthenticate :: PamHandle -&gt; PamFlag -&gt; IO PamRetCode
+</span><a href="System.Posix.PAM.LowLevel.html#pamAuthenticate"><span class="hs-identifier hs-var hs-var">pamAuthenticate</span></a></span></span><span> </span><span id="local-6989586621679041907"><span class="annot"><span class="annottext">pamHandle :: PamHandle
+</span><a href="#local-6989586621679041907"><span class="hs-identifier hs-var">pamHandle</span></a></span></span><span> </span><span id="local-6989586621679041906"><span class="annot"><span class="annottext">flag :: PamFlag
+</span><a href="#local-6989586621679041906"><span class="hs-identifier hs-var">flag</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-117"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679041905"><span class="annot"><span class="annottext">cFlag :: CInt
+</span><a href="#local-6989586621679041905"><span class="hs-identifier hs-var hs-var">cFlag</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; CInt
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; CInt) -&gt; Int -&gt; CInt
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PamFlag -&gt; Int
+forall a. Enum a =&gt; a -&gt; Int
+</span><span class="hs-identifier hs-var">fromEnum</span></span><span> </span><span class="annot"><span class="annottext">PamFlag
+</span><a href="#local-6989586621679041906"><span class="hs-identifier hs-var">flag</span></a></span><span>
+</span><span id="line-118"></span><span>    </span><span id="local-6989586621679041903"><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041903"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ptr () -&gt; CInt -&gt; IO CInt
+</span><span class="hs-identifier hs-var">c_pam_authenticate</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PamHandle -&gt; Ptr ()
+</span><a href="System.Posix.PAM.Types.html#cPamHandle"><span class="hs-identifier hs-var hs-var">cPamHandle</span></a></span><span> </span><span class="annot"><span class="annottext">PamHandle
+</span><a href="#local-6989586621679041907"><span class="hs-identifier hs-var">pamHandle</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041905"><span class="hs-identifier hs-var">cFlag</span></a></span><span>
+</span><span id="line-119"></span><span>    </span><span class="annot"><span class="annottext">PamRetCode -&gt; IO PamRetCode
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(PamRetCode -&gt; IO PamRetCode) -&gt; PamRetCode -&gt; IO PamRetCode
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CInt -&gt; PamRetCode
+</span><a href="System.Posix.PAM.LowLevel.html#retCodeFromC"><span class="hs-identifier hs-var">retCodeFromC</span></a></span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041903"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-120"></span><span>
+</span><span id="line-121"></span><span class="annot"><a href="System.Posix.PAM.LowLevel.html#pamAcctMgmt"><span class="hs-identifier hs-type">pamAcctMgmt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamHandle"><span class="hs-identifier hs-type">PamHandle</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamFlag"><span class="hs-identifier hs-type">PamFlag</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-type">PamRetCode</span></a></span><span>
+</span><span id="line-122"></span><span id="pamAcctMgmt"><span class="annot"><span class="annottext">pamAcctMgmt :: PamHandle -&gt; PamFlag -&gt; IO PamRetCode
+</span><a href="System.Posix.PAM.LowLevel.html#pamAcctMgmt"><span class="hs-identifier hs-var hs-var">pamAcctMgmt</span></a></span></span><span> </span><span id="local-6989586621679041900"><span class="annot"><span class="annottext">pamHandle :: PamHandle
+</span><a href="#local-6989586621679041900"><span class="hs-identifier hs-var">pamHandle</span></a></span></span><span> </span><span id="local-6989586621679041899"><span class="annot"><span class="annottext">flag :: PamFlag
+</span><a href="#local-6989586621679041899"><span class="hs-identifier hs-var">flag</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-123"></span><span>    </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679041898"><span class="annot"><span class="annottext">cFlag :: CInt
+</span><a href="#local-6989586621679041898"><span class="hs-identifier hs-var hs-var">cFlag</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; CInt
+forall a b. (Integral a, Num b) =&gt; a -&gt; b
+</span><span class="hs-identifier hs-var">fromIntegral</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; CInt) -&gt; Int -&gt; CInt
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">PamFlag -&gt; Int
+forall a. Enum a =&gt; a -&gt; Int
+</span><span class="hs-identifier hs-var">fromEnum</span></span><span> </span><span class="annot"><span class="annottext">PamFlag
+</span><a href="#local-6989586621679041899"><span class="hs-identifier hs-var">flag</span></a></span><span>
+</span><span id="line-124"></span><span>    </span><span id="local-6989586621679041897"><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041897"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ptr () -&gt; CInt -&gt; IO CInt
+</span><span class="hs-identifier hs-var">c_pam_acct_mgmt</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">PamHandle -&gt; Ptr ()
+</span><a href="System.Posix.PAM.Types.html#cPamHandle"><span class="hs-identifier hs-var hs-var">cPamHandle</span></a></span><span> </span><span class="annot"><span class="annottext">PamHandle
+</span><a href="#local-6989586621679041900"><span class="hs-identifier hs-var">pamHandle</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041898"><span class="hs-identifier hs-var">cFlag</span></a></span><span>
+</span><span id="line-125"></span><span>    </span><span class="annot"><span class="annottext">PamRetCode -&gt; IO PamRetCode
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(PamRetCode -&gt; IO PamRetCode) -&gt; PamRetCode -&gt; IO PamRetCode
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">CInt -&gt; PamRetCode
+</span><a href="System.Posix.PAM.LowLevel.html#retCodeFromC"><span class="hs-identifier hs-var">retCodeFromC</span></a></span><span> </span><span class="annot"><span class="annottext">CInt
+</span><a href="#local-6989586621679041897"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-126"></span></pre></body></html>

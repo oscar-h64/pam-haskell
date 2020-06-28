@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24maxtag_yRn9rQWdvBCEDeDjiSTEl"><span id="%24tag2con_yRn9rQWdvBCEDeDjiSTEl"><span id="%24con2tag_yRn9rQWdvBCEDeDjiSTEl"></span></span></span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">System.Posix.PAM.Types</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Foreign.C</span></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Foreign.Ptr</span></span><span>
+</span><span id="line-6"></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">data</span><span> </span><span id="PamMessage"><span class="annot"><a href="System.Posix.PAM.Types.html#PamMessage"><span class="hs-identifier hs-var">PamMessage</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PamMessage"><span class="annot"><a href="System.Posix.PAM.Types.html#PamMessage"><span class="hs-identifier hs-var">PamMessage</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="pmString"><span class="annot"><span class="annottext">PamMessage -&gt; String
+</span><a href="System.Posix.PAM.Types.html#pmString"><span class="hs-identifier hs-var hs-var">pmString</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-8"></span><span>                             </span><span class="hs-special">,</span><span> </span><span id="pmStyle"><span class="annot"><span class="annottext">PamMessage -&gt; PamStyle
+</span><a href="System.Posix.PAM.Types.html#pmStyle"><span class="hs-identifier hs-var hs-var">pmStyle</span></a></span></span><span>  </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="System.Posix.PAM.Types.html#PamStyle"><span class="hs-identifier hs-type">PamStyle</span></a></span><span>
+</span><span id="line-9"></span><span>                             </span><span class="hs-special">}</span><span>
+</span><span id="line-10"></span><span>                             </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041872"><span id="local-6989586621679041874"><span id="local-6989586621679041876"><span class="annot"><span class="annottext">Int -&gt; PamMessage -&gt; ShowS
+[PamMessage] -&gt; ShowS
+PamMessage -&gt; String
+(Int -&gt; PamMessage -&gt; ShowS)
+-&gt; (PamMessage -&gt; String)
+-&gt; ([PamMessage] -&gt; ShowS)
+-&gt; Show PamMessage
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PamMessage] -&gt; ShowS
+$cshowList :: [PamMessage] -&gt; ShowS
+show :: PamMessage -&gt; String
+$cshow :: PamMessage -&gt; String
+showsPrec :: Int -&gt; PamMessage -&gt; ShowS
+$cshowsPrec :: Int -&gt; PamMessage -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041867"><span id="local-6989586621679041869"><span class="annot"><span class="annottext">PamMessage -&gt; PamMessage -&gt; Bool
+(PamMessage -&gt; PamMessage -&gt; Bool)
+-&gt; (PamMessage -&gt; PamMessage -&gt; Bool) -&gt; Eq PamMessage
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PamMessage -&gt; PamMessage -&gt; Bool
+$c/= :: PamMessage -&gt; PamMessage -&gt; Bool
+== :: PamMessage -&gt; PamMessage -&gt; Bool
+$c== :: PamMessage -&gt; PamMessage -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">data</span><span> </span><span id="PamStyle"><span class="annot"><a href="System.Posix.PAM.Types.html#PamStyle"><span class="hs-identifier hs-var">PamStyle</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PamPromptEchoOff"><span class="annot"><a href="System.Posix.PAM.Types.html#PamPromptEchoOff"><span class="hs-identifier hs-var">PamPromptEchoOff</span></a></span></span><span>
+</span><span id="line-13"></span><span>              </span><span class="hs-glyph">|</span><span> </span><span id="PamPromptEchoOn"><span class="annot"><a href="System.Posix.PAM.Types.html#PamPromptEchoOn"><span class="hs-identifier hs-var">PamPromptEchoOn</span></a></span></span><span>
+</span><span id="line-14"></span><span>              </span><span class="hs-glyph">|</span><span> </span><span id="PamErrorMsg"><span class="annot"><a href="System.Posix.PAM.Types.html#PamErrorMsg"><span class="hs-identifier hs-var">PamErrorMsg</span></a></span></span><span>
+</span><span id="line-15"></span><span>              </span><span class="hs-glyph">|</span><span> </span><span id="PamTextInfo"><span class="annot"><a href="System.Posix.PAM.Types.html#PamTextInfo"><span class="hs-identifier hs-var">PamTextInfo</span></a></span></span><span>
+</span><span id="line-16"></span><span>              </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041856"><span id="local-6989586621679041858"><span id="local-6989586621679041860"><span class="annot"><span class="annottext">Int -&gt; PamStyle -&gt; ShowS
+[PamStyle] -&gt; ShowS
+PamStyle -&gt; String
+(Int -&gt; PamStyle -&gt; ShowS)
+-&gt; (PamStyle -&gt; String) -&gt; ([PamStyle] -&gt; ShowS) -&gt; Show PamStyle
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PamStyle] -&gt; ShowS
+$cshowList :: [PamStyle] -&gt; ShowS
+show :: PamStyle -&gt; String
+$cshow :: PamStyle -&gt; String
+showsPrec :: Int -&gt; PamStyle -&gt; ShowS
+$cshowsPrec :: Int -&gt; PamStyle -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041852"><span id="local-6989586621679041854"><span class="annot"><span class="annottext">PamStyle -&gt; PamStyle -&gt; Bool
+(PamStyle -&gt; PamStyle -&gt; Bool)
+-&gt; (PamStyle -&gt; PamStyle -&gt; Bool) -&gt; Eq PamStyle
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PamStyle -&gt; PamStyle -&gt; Bool
+$c/= :: PamStyle -&gt; PamStyle -&gt; Bool
+== :: PamStyle -&gt; PamStyle -&gt; Bool
+$c== :: PamStyle -&gt; PamStyle -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-comment">{- | http://www.kernel.org/pub/linux/libs/pam/Linux-PAM-html/adg-interface-of-app-expected.html#adg-pam_conv
+ - resp_code member in C sturct is unused and should be set to zero, that's why there is no code field in the haskell data type
+ -}</span><span>
+</span><span id="line-21"></span><span class="hs-keyword">data</span><span> </span><span id="PamResponse"><span class="annot"><a href="System.Posix.PAM.Types.html#PamResponse"><span class="hs-identifier hs-var">PamResponse</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PamResponse"><span class="annot"><a href="System.Posix.PAM.Types.html#PamResponse"><span class="hs-identifier hs-var">PamResponse</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-22"></span><span>                 </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041845"><span id="local-6989586621679041847"><span id="local-6989586621679041849"><span class="annot"><span class="annottext">Int -&gt; PamResponse -&gt; ShowS
+[PamResponse] -&gt; ShowS
+PamResponse -&gt; String
+(Int -&gt; PamResponse -&gt; ShowS)
+-&gt; (PamResponse -&gt; String)
+-&gt; ([PamResponse] -&gt; ShowS)
+-&gt; Show PamResponse
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PamResponse] -&gt; ShowS
+$cshowList :: [PamResponse] -&gt; ShowS
+show :: PamResponse -&gt; String
+$cshow :: PamResponse -&gt; String
+showsPrec :: Int -&gt; PamResponse -&gt; ShowS
+$cshowsPrec :: Int -&gt; PamResponse -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041841"><span id="local-6989586621679041843"><span class="annot"><span class="annottext">PamResponse -&gt; PamResponse -&gt; Bool
+(PamResponse -&gt; PamResponse -&gt; Bool)
+-&gt; (PamResponse -&gt; PamResponse -&gt; Bool) -&gt; Eq PamResponse
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PamResponse -&gt; PamResponse -&gt; Bool
+$c/= :: PamResponse -&gt; PamResponse -&gt; Bool
+== :: PamResponse -&gt; PamResponse -&gt; Bool
+$c== :: PamResponse -&gt; PamResponse -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">data</span><span> </span><span id="PamRetCode"><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-var">PamRetCode</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PamSuccess"><span class="annot"><a href="System.Posix.PAM.Types.html#PamSuccess"><span class="hs-identifier hs-var">PamSuccess</span></a></span></span><span>
+</span><span id="line-25"></span><span>                </span><span class="hs-glyph">|</span><span> </span><span id="PamRetCode"><span class="annot"><a href="System.Posix.PAM.Types.html#PamRetCode"><span class="hs-identifier hs-var">PamRetCode</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span>
+</span><span id="line-26"></span><span>                </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041833"><span id="local-6989586621679041835"><span id="local-6989586621679041837"><span class="annot"><span class="annottext">Int -&gt; PamRetCode -&gt; ShowS
+[PamRetCode] -&gt; ShowS
+PamRetCode -&gt; String
+(Int -&gt; PamRetCode -&gt; ShowS)
+-&gt; (PamRetCode -&gt; String)
+-&gt; ([PamRetCode] -&gt; ShowS)
+-&gt; Show PamRetCode
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PamRetCode] -&gt; ShowS
+$cshowList :: [PamRetCode] -&gt; ShowS
+show :: PamRetCode -&gt; String
+$cshow :: PamRetCode -&gt; String
+showsPrec :: Int -&gt; PamRetCode -&gt; ShowS
+$cshowsPrec :: Int -&gt; PamRetCode -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041829"><span id="local-6989586621679041831"><span class="annot"><span class="annottext">PamRetCode -&gt; PamRetCode -&gt; Bool
+(PamRetCode -&gt; PamRetCode -&gt; Bool)
+-&gt; (PamRetCode -&gt; PamRetCode -&gt; Bool) -&gt; Eq PamRetCode
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PamRetCode -&gt; PamRetCode -&gt; Bool
+$c/= :: PamRetCode -&gt; PamRetCode -&gt; Bool
+== :: PamRetCode -&gt; PamRetCode -&gt; Bool
+$c== :: PamRetCode -&gt; PamRetCode -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">data</span><span> </span><span id="PamFlag"><span class="annot"><a href="System.Posix.PAM.Types.html#PamFlag"><span class="hs-identifier hs-var">PamFlag</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PamSilent"><span class="annot"><a href="System.Posix.PAM.Types.html#PamSilent"><span class="hs-identifier hs-var">PamSilent</span></a></span></span><span>
+</span><span id="line-29"></span><span>             </span><span class="hs-glyph">|</span><span> </span><span id="PamDisallowNullAuthTok"><span class="annot"><a href="System.Posix.PAM.Types.html#PamDisallowNullAuthTok"><span class="hs-identifier hs-var">PamDisallowNullAuthTok</span></a></span></span><span>
+</span><span id="line-30"></span><span>             </span><span class="hs-glyph">|</span><span> </span><span id="PamEstablishCred"><span class="annot"><a href="System.Posix.PAM.Types.html#PamEstablishCred"><span class="hs-identifier hs-var">PamEstablishCred</span></a></span></span><span>
+</span><span id="line-31"></span><span>             </span><span class="hs-glyph">|</span><span> </span><span id="PamDeleteCred"><span class="annot"><a href="System.Posix.PAM.Types.html#PamDeleteCred"><span class="hs-identifier hs-var">PamDeleteCred</span></a></span></span><span>
+</span><span id="line-32"></span><span>             </span><span class="hs-glyph">|</span><span> </span><span id="PamReinitializeCred"><span class="annot"><a href="System.Posix.PAM.Types.html#PamReinitializeCred"><span class="hs-identifier hs-var">PamReinitializeCred</span></a></span></span><span>
+</span><span id="line-33"></span><span>             </span><span class="hs-glyph">|</span><span> </span><span id="PamRefreshCred"><span class="annot"><a href="System.Posix.PAM.Types.html#PamRefreshCred"><span class="hs-identifier hs-var">PamRefreshCred</span></a></span></span><span>
+</span><span id="line-34"></span><span>             </span><span class="hs-glyph">|</span><span> </span><span id="PamChangeExpiredAuthTok"><span class="annot"><a href="System.Posix.PAM.Types.html#PamChangeExpiredAuthTok"><span class="hs-identifier hs-var">PamChangeExpiredAuthTok</span></a></span></span><span>
+</span><span id="line-35"></span><span>             </span><span class="hs-glyph">|</span><span> </span><span id="PamNone"><span class="annot"><a href="System.Posix.PAM.Types.html#PamNone"><span class="hs-identifier hs-var">PamNone</span></a></span></span><span>
+</span><span id="line-36"></span><span>             </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041815"><span id="local-6989586621679041817"><span id="local-6989586621679041819"><span class="annot"><span class="annottext">Int -&gt; PamFlag -&gt; ShowS
+[PamFlag] -&gt; ShowS
+PamFlag -&gt; String
+(Int -&gt; PamFlag -&gt; ShowS)
+-&gt; (PamFlag -&gt; String) -&gt; ([PamFlag] -&gt; ShowS) -&gt; Show PamFlag
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PamFlag] -&gt; ShowS
+$cshowList :: [PamFlag] -&gt; ShowS
+show :: PamFlag -&gt; String
+$cshow :: PamFlag -&gt; String
+showsPrec :: Int -&gt; PamFlag -&gt; ShowS
+$cshowsPrec :: Int -&gt; PamFlag -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041811"><span id="local-6989586621679041813"><span class="annot"><span class="annottext">PamFlag -&gt; PamFlag -&gt; Bool
+(PamFlag -&gt; PamFlag -&gt; Bool)
+-&gt; (PamFlag -&gt; PamFlag -&gt; Bool) -&gt; Eq PamFlag
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PamFlag -&gt; PamFlag -&gt; Bool
+$c/= :: PamFlag -&gt; PamFlag -&gt; Bool
+== :: PamFlag -&gt; PamFlag -&gt; Bool
+$c== :: PamFlag -&gt; PamFlag -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041795"><span id="local-6989586621679041797"><span id="local-6989586621679041799"><span id="local-6989586621679041801"><span id="local-6989586621679041803"><span id="local-6989586621679041805"><span id="local-6989586621679041807"><span id="local-6989586621679041809"><span class="annot"><span class="annottext">Int -&gt; PamFlag
+PamFlag -&gt; Int
+PamFlag -&gt; [PamFlag]
+PamFlag -&gt; PamFlag
+PamFlag -&gt; PamFlag -&gt; [PamFlag]
+PamFlag -&gt; PamFlag -&gt; PamFlag -&gt; [PamFlag]
+(PamFlag -&gt; PamFlag)
+-&gt; (PamFlag -&gt; PamFlag)
+-&gt; (Int -&gt; PamFlag)
+-&gt; (PamFlag -&gt; Int)
+-&gt; (PamFlag -&gt; [PamFlag])
+-&gt; (PamFlag -&gt; PamFlag -&gt; [PamFlag])
+-&gt; (PamFlag -&gt; PamFlag -&gt; [PamFlag])
+-&gt; (PamFlag -&gt; PamFlag -&gt; PamFlag -&gt; [PamFlag])
+-&gt; Enum PamFlag
+forall a.
+(a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; a -&gt; [a])
+-&gt; Enum a
+enumFromThenTo :: PamFlag -&gt; PamFlag -&gt; PamFlag -&gt; [PamFlag]
+$cenumFromThenTo :: PamFlag -&gt; PamFlag -&gt; PamFlag -&gt; [PamFlag]
+enumFromTo :: PamFlag -&gt; PamFlag -&gt; [PamFlag]
+$cenumFromTo :: PamFlag -&gt; PamFlag -&gt; [PamFlag]
+enumFromThen :: PamFlag -&gt; PamFlag -&gt; [PamFlag]
+$cenumFromThen :: PamFlag -&gt; PamFlag -&gt; [PamFlag]
+enumFrom :: PamFlag -&gt; [PamFlag]
+$cenumFrom :: PamFlag -&gt; [PamFlag]
+fromEnum :: PamFlag -&gt; Int
+$cfromEnum :: PamFlag -&gt; Int
+toEnum :: Int -&gt; PamFlag
+$ctoEnum :: Int -&gt; PamFlag
+pred :: PamFlag -&gt; PamFlag
+$cpred :: PamFlag -&gt; PamFlag
+succ :: PamFlag -&gt; PamFlag
+$csucc :: PamFlag -&gt; PamFlag
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="hs-keyword">type</span><span> </span><span id="PamConv"><span class="annot"><a href="System.Posix.PAM.Types.html#PamConv"><span class="hs-identifier hs-var">PamConv</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="System.Posix.PAM.Types.html#PamMessage"><span class="hs-identifier hs-type">PamMessage</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="System.Posix.PAM.Types.html#PamResponse"><span class="hs-identifier hs-type">PamResponse</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-keyword">data</span><span> </span><span id="PamHandle"><span class="annot"><a href="System.Posix.PAM.Types.html#PamHandle"><span class="hs-identifier hs-var">PamHandle</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PamHandle"><span class="annot"><a href="System.Posix.PAM.Types.html#PamHandle"><span class="hs-identifier hs-var">PamHandle</span></a></span></span><span> </span><span class="hs-special">{</span><span> </span><span id="cPamHandle"><span class="annot"><span class="annottext">PamHandle -&gt; Ptr ()
+</span><a href="System.Posix.PAM.Types.html#cPamHandle"><span class="hs-identifier hs-var hs-var">cPamHandle</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>                           </span><span class="hs-special">,</span><span> </span><span id="cPamCallback"><span class="annot"><span class="annottext">PamHandle
+-&gt; FunPtr
+     (CInt -&gt; Ptr (Ptr ()) -&gt; Ptr (Ptr ()) -&gt; Ptr () -&gt; IO CInt)
+</span><a href="System.Posix.PAM.Types.html#cPamCallback"><span class="hs-identifier hs-var hs-var">cPamCallback</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FunPtr</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">CInt</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ptr</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">CInt</span></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>                           </span><span class="hs-special">}</span><span>
+</span><span id="line-44"></span><span>                           </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679041784"><span id="local-6989586621679041786"><span id="local-6989586621679041788"><span class="annot"><span class="annottext">Int -&gt; PamHandle -&gt; ShowS
+[PamHandle] -&gt; ShowS
+PamHandle -&gt; String
+(Int -&gt; PamHandle -&gt; ShowS)
+-&gt; (PamHandle -&gt; String)
+-&gt; ([PamHandle] -&gt; ShowS)
+-&gt; Show PamHandle
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [PamHandle] -&gt; ShowS
+$cshowList :: [PamHandle] -&gt; ShowS
+show :: PamHandle -&gt; String
+$cshow :: PamHandle -&gt; String
+showsPrec :: Int -&gt; PamHandle -&gt; ShowS
+$cshowsPrec :: Int -&gt; PamHandle -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679041780"><span id="local-6989586621679041782"><span class="annot"><span class="annottext">PamHandle -&gt; PamHandle -&gt; Bool
+(PamHandle -&gt; PamHandle -&gt; Bool)
+-&gt; (PamHandle -&gt; PamHandle -&gt; Bool) -&gt; Eq PamHandle
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: PamHandle -&gt; PamHandle -&gt; Bool
+$c/= :: PamHandle -&gt; PamHandle -&gt; Bool
+== :: PamHandle -&gt; PamHandle -&gt; Bool
+$c== :: PamHandle -&gt; PamHandle -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span></pre></body></html>
